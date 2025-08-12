@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name            Reader View (Readability)
-// @namespace       https://github.com/kiranmurmu
+// @namespace       https://kiranmurmu.github.io/
 // @description     Reader View (Mozilla Readability) for Tampermonkey
 // @copyright       2025+, Kiran Murmu
 // @match           *://*/*
 // @author          kiranmurmu
 // @version         0.1.0
-// @source          https://github.com/kiranmurmu/userscripts/reader-view
+// @homepage        https://github.com/kiranmurmu/userscripts
+// @source          https://github.com/kiranmurmu/userscripts/tree/main/reader-view
 // @license         MIT
 // @run-at          document-start
 // @grant           GM_registerMenuCommand
-// @require         https://raw.githubusercontent.com/mozilla/readability/refs/heads/main/Readability.js
+// @require         https://cdnjs.cloudflare.com/ajax/libs/readability/0.6.0/Readability.min.js
 // ==/UserScript==
 
 (function () {
