@@ -1,0 +1,67 @@
+// ==UserScript==
+// @name            Reader View (Readability)
+// @namespace       https://github.com/kiranmurmu
+// @description     Reader View (Mozilla Readability) for Tampermonkey
+// @copyright       2025+, Kiran Murmu
+// @match           *://*/*
+// @author          kiranmurmu
+// @version         0.1.0
+// @source          https://github.com/kiranmurmu/userscripts/reader-view
+// @license         MIT
+// @run-at          document-start
+// @grant           GM_registerMenuCommand
+// @require         https://raw.githubusercontent.com/mozilla/readability/refs/heads/main/Readability.js
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    if (typeof Readability == "undefined") {
+        return;
+    }
+
+    function getArticle() {
+        return new Readability(document.cloneNode(true)).parse();
+    }
+
+    function showArticle({ title, url, favIconUrl, article }) {
+        const { parentNode } = document.documentElement;
+        const documentElement = document.implementation.createHTMLDocument(title);
+        const favIcon = document.createElement("link");
+        const heading = document.createElement("h1");
+        const container = document.createElement("div");
+
+        try {
+            favIcon.rel = "shortcut icon";
+            favIcon.href = favIconUrl;
+            documentElement.head.appendChild(favIcon);
+
+            heading.id = "readability-title";
+            heading.textContent = article.title;
+            container.innerHTML = article.content;
+            container.className = "article-container";
+            container.insertBefore(heading, container.firstChild);
+
+            documentElement.body.appendChild(container);
+            documentElement.documentElement.setAttribute("lang", "en-US");
+            parentNode.replaceChild(documentElement.documentElement, document.documentElement);
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                console.error(error.message);
+            }
+            else {
+                console.error(error);
+            }
+        }
+    }
+
+    GM_registerMenuCommand("Enable Reader View", function (event) {
+        const favIcon = document.head.querySelector("link[rel*='icon']");
+        const title = document.title;
+        const url = location.href.replace(/\/$/g, "");
+        const favIconUrl = favIcon?.href ?? `https://icons.duckduckgo.com/ip3/${location.hostname}.ico`;
+        const article = getArticle();
+        showArticle({ title, url, favIconUrl, article });
+    });
+})();
