@@ -14,11 +14,10 @@
     },
     "devDependencies": {
         "@types/node": "^24.3.0",
-        "typescript": "^5.9.2",
-        "userscript": "types/userscript"
+        "@types/tampermonkey": "^5.0.4",
+        "typescript": "^5.9.2"
     },
     "workspaces": [
-        "types/userscript",
         "src/reader-view"
     ]
 }
