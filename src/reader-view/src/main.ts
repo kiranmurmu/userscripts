@@ -16,6 +16,7 @@
 // ==/UserScript==
 
 import type MozillaReadability from "mozilla-readability";
+import type {} from "userscript";
 
 type Readability = MozillaReadability;
 type ReadabilityResult = MozillaReadability.ParseResult;
