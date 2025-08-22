@@ -17,6 +17,7 @@
         "typescript": "^5.9.2"
     },
     "workspaces": [
+        "types/userscript",
         "src/reader-view"
     ]
 }
