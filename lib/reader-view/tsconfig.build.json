@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "outDir": "build",
+        "strict": true,
+        "alwaysStrict": false,
+        "skipLibCheck": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}
