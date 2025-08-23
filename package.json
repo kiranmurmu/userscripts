@@ -13,9 +13,12 @@
         "node": ">=22.18.0"
     },
     "devDependencies": {
-        "@types/node": "^24.3.0",
-        "@types/tampermonkey": "^5.0.4",
         "typescript": "^5.9.2"
+    },
+    "dependencies": {
+        "@types/mozilla-readability": "^0.2.1",
+        "@types/node": "^24.3.0",
+        "@types/tampermonkey": "^5.0.4"
     },
     "workspaces": [
         "lib/reader-view"
