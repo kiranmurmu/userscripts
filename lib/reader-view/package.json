@@ -4,9 +4,10 @@
     "description": "",
     "main": "",
     "scripts": {
-        "build": "npm run build:tsc && npm run build:cat",
-        "build:tsc": "tsc -p tsconfig.build.json && echo >> build/reader-view.meta.js",
-        "build:cat": "cat build/reader-view.meta.js build/reader-view.js > build/reader-view.user.js",
+        "build": "npm run build:main && npm run build:meta && npm run build:user",
+        "build:main": "tsc -p tsconfig.build.json",
+        "build:meta": "head -n 19 src/reader-view.ts > build/reader-view.meta.js",
+        "build:user": "cat build/reader-view.meta.js build/reader-view.js > build/reader-view.user.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],

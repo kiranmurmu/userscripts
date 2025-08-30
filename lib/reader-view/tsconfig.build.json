@@ -6,6 +6,7 @@
         "outDir": "build",
         "strict": true,
         "alwaysStrict": false,
+        "removeComments": true,
         "skipLibCheck": true
     },
     "include": [
