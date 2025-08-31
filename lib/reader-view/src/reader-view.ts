@@ -29,7 +29,13 @@ interface ReadabilityConstructor extends Readability {
 interface ShowArticleOptions {
     title: string;
     url: string;
-    favIconUrl: string;
+    faviconUrl: string;
+    article: ReadabilityResult | null;
+}
+
+interface ShowPlainTextOptions {
+    title: string;
+    faviconUrl: string;
     article: ReadabilityResult | null;
 }
 
@@ -46,7 +52,43 @@ declare var Readability: ReadabilityConstructor;
         return new Readability(document.cloneNode(true)).parse();
     }
 
-    function showArticle({ title, url, favIconUrl, article }: ShowArticleOptions) {
+    function showPlainText({ title, faviconUrl, article }: ShowPlainTextOptions) {
+        const { parentNode } = document.documentElement;
+        const documentElement = document.implementation.createHTMLDocument(title);
+        const container = document.createElement("pre");
+
+        try {
+            const articleTitle = document.createTextNode(article!.title);
+            const articleContent = document.createTextNode(article!.textContent);
+            const stylesheet = GM_getResourceURL("plaintext.css");
+
+            GM_addElement(documentElement.head, "link", {
+                rel: "shortcut icon",
+                href: faviconUrl
+            });
+
+            GM_addElement(documentElement.head, "link", {
+                rel: "stylesheet",
+                href: stylesheet
+            });
+
+            container.appendChild(articleTitle);
+            container.appendChild(articleContent);
+
+            documentElement.body.appendChild(container);
+            parentNode!.replaceChild(documentElement.documentElement, document.documentElement);
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                console.error(error.message);
+            }
+            else {
+                console.error(error);
+            }
+        }
+    }
+
+    function showArticle({ title, url, faviconUrl, article }: ShowArticleOptions) {
         const { parentNode } = document.documentElement;
         const documentElement = document.implementation.createHTMLDocument(title);
         const favIcon = document.createElement("link");
@@ -55,7 +97,7 @@ declare var Readability: ReadabilityConstructor;
 
         try {
             favIcon.rel = "shortcut icon";
-            favIcon.href = favIconUrl;
+            favIcon.href = faviconUrl;
             documentElement.head.appendChild(favIcon);
 
             heading.id = "readability-title";
@@ -78,12 +120,18 @@ declare var Readability: ReadabilityConstructor;
         }
     }
 
-    GM_registerMenuCommand("Enable Reader View", function (_event) {
-        const favIcon = document.head.querySelector<HTMLLinkElement>("link[rel*='icon']");
-        const title = document.title;
-        const url = location.href.replace(/\/$/g, "");
-        const favIconUrl = favIcon?.href ?? `https://icons.duckduckgo.com/ip3/${location.hostname}.ico`;
+    const favicon = document.head.querySelector<HTMLLinkElement>("link[rel*='icon']");
+    const title = document.title;
+    const url = location.href.replace(/\/$/g, "");
+    const faviconUrl = favicon?.href ?? `https://icons.duckduckgo.com/ip3/${location.hostname}.ico`;
+
+    GM_registerMenuCommand("Enable reader view", (_event) => {
         const article = getArticle();
-        showArticle({ title, url, favIconUrl, article });
+        showArticle({ title, url, faviconUrl, article });
+    });
+
+    GM_registerMenuCommand("Extract article text", (_event) => {
+        const article = getArticle();
+        showPlainText({ title, faviconUrl, article });
     });
 })();
