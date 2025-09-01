@@ -12,6 +12,7 @@
 // @run-at                  document-start
 // @grant                   GM_registerMenuCommand
 // @grant                   GM_addElement
+// @grant                   GM_getResourceURL
 // @icon                    https://www.tampermonkey.net/images/icon.png
 // @require                 https://cdnjs.cloudflare.com/ajax/libs/readability/0.6.0/Readability.min.js
 // @resource reader.css     https://github.com/kiranmurmu/userscripts/raw/refs/heads/main/lib/reader-view/style/reader.css
@@ -60,7 +61,7 @@ declare var Readability: ReadabilityConstructor;
         try {
             const articleTitle = document.createTextNode(article!.title);
             const articleContent = document.createTextNode(article!.textContent);
-            const stylesheet = GM_getResourceURL("plaintext.css");
+            const stylesheet = GM_getResourceURL("reader.css");
 
             GM_addElement(documentElement.head, "link", {
                 rel: "shortcut icon",
