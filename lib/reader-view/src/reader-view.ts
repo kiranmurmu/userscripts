@@ -14,7 +14,7 @@
 // @grant                   GM_addElement
 // @icon                    https://www.tampermonkey.net/images/icon.png
 // @require                 https://cdnjs.cloudflare.com/ajax/libs/readability/0.6.0/Readability.min.js
-// @resource plaintext.css  https://github.com/kiranmurmu/userscripts/raw/refs/heads/main/lib/reader-view/style/plaintext.css
+// @resource reader.css     https://github.com/kiranmurmu/userscripts/raw/refs/heads/main/lib/reader-view/style/reader.css
 // ==/UserScript==
 
 import type MozillaReadability from "mozilla-readability";
