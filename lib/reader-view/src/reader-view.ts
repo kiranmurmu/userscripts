@@ -11,7 +11,6 @@
 // @license                 MIT
 // @run-at                  document-start
 // @grant                   GM_registerMenuCommand
-// @grant                   GM_addElement
 // @grant                   GM_getResourceURL
 // @icon                    https://www.tampermonkey.net/images/icon.png
 // @require                 https://cdnjs.cloudflare.com/ajax/libs/readability/0.6.0/Readability.min.js
@@ -57,25 +56,24 @@ declare var Readability: ReadabilityConstructor;
         const { parentNode } = document.documentElement;
         const documentElement = document.implementation.createHTMLDocument(title);
         const container = document.createElement("pre");
+        const iconLink = document.createElement("link");
+        const styleLink = document.createElement("link");
 
         try {
             const articleTitle = document.createTextNode(article!.title);
             const articleContent = document.createTextNode(article!.textContent);
-            const stylesheet = GM_getResourceURL("reader.css");
+            const styleData = GM_getResourceURL("reader.css");
 
-            GM_addElement(documentElement.head, "link", {
-                rel: "shortcut icon",
-                href: faviconUrl
-            });
-
-            GM_addElement(documentElement.head, "link", {
-                rel: "stylesheet",
-                href: stylesheet
-            });
+            iconLink.rel = "shortcut icon";
+            iconLink.href = faviconUrl;
+            styleLink.rel = "stylesheet";
+            styleLink.href = styleData;
 
             container.appendChild(articleTitle);
             container.appendChild(articleContent);
 
+            documentElement.head.appendChild(iconLink);
+            documentElement.head.appendChild(styleLink);
             documentElement.body.appendChild(container);
             parentNode!.replaceChild(documentElement.documentElement, document.documentElement);
         }
