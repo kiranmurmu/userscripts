@@ -90,23 +90,33 @@ declare var Readability: ReadabilityConstructor;
     function showArticle({ title, url, faviconUrl, article }: ShowArticleOptions) {
         const { parentNode } = document.documentElement;
         const documentElement = document.implementation.createHTMLDocument(title);
-        const favIcon = document.createElement("link");
+        const iconLink = document.createElement("link");
+        const styleLink = document.createElement("link");
         const heading = document.createElement("h1");
         const container = document.createElement("div");
+        const header = document.createElement("div");
+        const content = document.createElement("div");
 
         try {
-            favIcon.rel = "shortcut icon";
-            favIcon.href = faviconUrl;
-            documentElement.head.appendChild(favIcon);
+            iconLink.rel = "shortcut icon";
+            iconLink.href = faviconUrl;
+            styleLink.rel = "stylesheet";
+            styleLink.href = GM_getResourceURL("reader.css");
 
-            heading.id = "readability-title";
+            heading.className = "title";
             heading.textContent = article!.title;
-            container.innerHTML = article!.content;
-            container.className = "article-container";
-            container.insertBefore(heading, container.firstChild);
+            header.className = "header";
+            header.appendChild(heading);
 
+            content.className = "content";
+            content.innerHTML = article!.content;
+            container.className = "container";
+            container.appendChild(header);
+            container.appendChild(content);
+
+            documentElement.head.appendChild(iconLink);
+            documentElement.head.appendChild(styleLink);
             documentElement.body.appendChild(container);
-            documentElement.documentElement.setAttribute("lang", "en-US");
             parentNode!.replaceChild(documentElement.documentElement, document.documentElement);
         }
         catch (error) {
