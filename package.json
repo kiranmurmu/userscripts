@@ -4,7 +4,7 @@
     "description": "Collection of useful userscripts for tampermonkey!",
     "type": "module",
     "scripts": {
-        "build:pkg": "npm run build --workspaces",
+        "build:lib": "npm run build --workspace=lib",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
