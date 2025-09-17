@@ -16,17 +16,6 @@ type ErrorOptions = { code?: ExitCode, exitCode?: typeof ExitCode[ExitCode] };
 type ThisError<Type extends Error> = Type & ErrorOptions;
 type DefaultOptions = Readonly<{ output: string | boolean; input: string; }>;
 
-type Options = { input?: string; output?: string; };
-const _default = { input: "package.json" } as const;
-
-interface ErrorWithCode extends Error {
-    code: (
-        "ERR_MODULE_NOT_FOUND" |
-        "ERR_IMPORT_ATTRIBUTE_TYPE_INCOMPATIBLE" |
-        "ERR_UNKNOWN_FILE_EXTENSION"
-    );
-}
-
 async function readJson(source: string) {
     const cwd = process.cwd();
 
