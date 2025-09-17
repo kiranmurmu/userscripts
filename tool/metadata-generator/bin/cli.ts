@@ -14,6 +14,7 @@ const ExitCode = {
 type ExitCode = keyof typeof ExitCode;
 type ErrorOptions = { code?: ExitCode, exitCode?: typeof ExitCode[ExitCode] };
 type ThisError<Type extends Error> = Type & ErrorOptions;
+type DefaultOptions = Readonly<{ output: string | boolean; input: string; }>;
 
 type Options = { input?: string; output?: string; };
 const _default = { input: "package.json" } as const;
@@ -65,55 +66,31 @@ async function readJson(source: string) {
     }
 }
 
-async function handleOptions(opts: Options) {
-    if (isEmpty(opts)) prog.help();
-    const cwd = process.cwd();
-    const input = opts.input ?? _default.input;
+async function handleOptions(options: OptionValues, defaultOpts: DefaultOptions) {
+    if (isEmpty(options)) prog.help();
+
+    const input: string = options.input ?? defaultOpts.input;
+    const output: string | boolean = options.output ?? defaultOpts.output;
 
     try {
-        const { default: data } = await import(path.join(cwd, input), {
-            with: { type: "json"}
-        });
-        console.log(data);
-    }
-    catch(err: unknown) {
-        if (!(err instanceof Error)) throw err;
-        const error = err as ErrorWithCode;
+        const dataObj = await readJson(input);
 
-        switch (error.code) {
-            case "ERR_MODULE_NOT_FOUND": {
-                prog.error("error: file not found", {
-                    code: error.code,
-                    exitCode: 1,
-                });
-            }
-            case "ERR_IMPORT_ATTRIBUTE_TYPE_INCOMPATIBLE": {
-                prog.error(`error: file is not of type "json"`, {
-                    code: error.code,
-                    exitCode: 2,
-                });
-            }
-            case "ERR_UNKNOWN_FILE_EXTENSION": {
-                prog.error(`error: unknown file extension "${path.extname(input)}"`, {
-                    code: error.code,
-                    exitCode: 3,
-                });
-            }
-            default: break;
-        }
-
-        if (err instanceof SyntaxError) {
-            prog.error(`error: file is not valid "json"`, {
-                code: "ERR_INVALID_SYNTAX",
-                exitCode: 4,
-            });
+        if (typeof output == "string" && output) {
+            console.log("TODO: save to file");
         }
         else {
-            prog.error(`error: ${err.message}`, {
-                code: "ERR_UNKNOWN",
-                exitCode: -1,
-            });
+            console.log(dataObj);
         }
+    }
+    catch(exception: unknown) {
+        let error: ThisError<Error> = (
+            exception instanceof Error ? exception : new Error("unable to handle command option")
+        );
+
+        prog.error(`error: ${error.message}`, {
+            code: error.code ?? "ERR_OPTION_HANDLE",
+            exitCode: error.exitCode ?? ExitCode["ERR_OPTION_HANDLE"]
+        } as ErrorOptions);
     }
 }
 
@@ -137,16 +114,20 @@ function isObject(arg: any): arg is object {
 }
 
 function main(argv: string[]) {
+    const options: DefaultOptions = {
+        input: "package.json",
+        output: false
+    };
+
     prog.name("metag")
         .description("Metadata generator for userscript.")
         .version("1.0.0");
 
-    prog.option("-i, --input [file]", `input json file (default: "${_default.input}")`)
-        .option("-o, --output <file>", "output meta file")
-        .option("-p, --print", "print meta output")
+    prog.option("-i, --input <file>", `input json file (default: "${options.input}")`)
+        .option("-o, --output [file]", "show output or save to file (default: false)")
         .parse(argv);
 
-    handleOptions(prog.opts<Options>());
+    handleOptions(prog.opts(), options);
 }
 
 if (import.meta?.main) { main(process.argv); }
