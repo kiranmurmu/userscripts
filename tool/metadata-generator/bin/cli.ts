@@ -67,14 +67,17 @@ async function handleOptions(opts: Options) {
     }
 }
 
-function isEmpty(obj: object) {
+function isEmpty(obj: object | any[]) {
+    if (Array.isArray(obj)) {
+        return !obj.length;
+    }
     for (const key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
             return false;
         }
     }
     return true;
-};
+}
 
 function main(argv: string[]) {
     prog.name("metag")
