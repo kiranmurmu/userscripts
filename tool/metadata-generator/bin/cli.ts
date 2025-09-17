@@ -79,6 +79,13 @@ function isEmpty(obj: object | any[]) {
     return true;
 }
 
+function isObject(arg: any): arg is object {
+    if (typeof arg == "object" && arg != null && !Array.isArray(arg)) {
+        return true;
+    }
+    return false;
+}
+
 function main(argv: string[]) {
     prog.name("metag")
         .description("Metadata generator for userscript.")
