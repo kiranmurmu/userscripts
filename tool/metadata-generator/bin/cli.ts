@@ -13,10 +13,19 @@ const ExitCode = {
 
 type ExitCode = keyof typeof ExitCode;
 type ErrorOptions = { code?: ExitCode, exitCode?: typeof ExitCode[ExitCode] };
-type ThisError<Type extends Error> = Type & ErrorOptions;
+type ThisError<T extends Error> = T & ErrorOptions;
 type DefaultOptions = Readonly<{ output: string | boolean; input: string; }>;
+type ScriptMetadata = Tampermonkey.ScriptMetadata;
 
-async function readJson(source: string) {
+interface PackageOptions {
+    version: string;
+    description: string;
+    author: string;
+    license: string;
+    metadata: ScriptMetadata;
+}
+
+async function readJson<T extends PackageOptions>(source: string): Promise<T> {
     const cwd = process.cwd();
 
     try {
@@ -27,12 +36,12 @@ async function readJson(source: string) {
         if (!isTypeObj || (isTypeObj && isEmpty(result))) {
             return {
                 metadata: {}
-            };
+            } as T;
         }
         if ("metadata" in result)
-            return result;
+            return result as T;
 
-        return (result["metadata"] = {}, result);
+        return (result["metadata"] = {}, result) as T;
     }
     catch (exception: unknown) {
         let error: ThisError<Error> = (
