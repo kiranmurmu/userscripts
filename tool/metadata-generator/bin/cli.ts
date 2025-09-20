@@ -15,7 +15,6 @@ type ExitCode = keyof typeof ExitCode;
 type ErrorOptions = { code?: ExitCode, exitCode?: typeof ExitCode[ExitCode] };
 type ThisError<T extends Error> = T & ErrorOptions;
 type DefaultOptions = Readonly<{ output: string | boolean; input: string; }>;
-type ScriptMetadata = Tampermonkey.ScriptMetadata;
 
 interface ScriptHeader {
     antifeature: string;
@@ -58,14 +57,6 @@ type PickAsOptional<T, K extends keyof T> = { [P in K]+?: T[P]; };
 type HeaderList = ["name", "namespace", "version", "description", "author", "match", "icon", "grant"];
 type ExtractHeader<T> = T extends string[] ? T[number] : never;
 type DefaultHeader = PickAsOptional<ScriptHeader, ExtractHeader<HeaderList>>;
-
-interface PackageOptions {
-    version: string;
-    description: string;
-    author: string;
-    license: string;
-    metadata: ScriptMetadata;
-}
 
 async function readJson<T extends Optional<ScriptHeader>>(source: string): Promise<T> {
     const cwd = process.cwd();
