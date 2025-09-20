@@ -17,6 +17,48 @@ type ThisError<T extends Error> = T & ErrorOptions;
 type DefaultOptions = Readonly<{ output: string | boolean; input: string; }>;
 type ScriptMetadata = Tampermonkey.ScriptMetadata;
 
+interface ScriptHeader {
+    antifeature: string;
+    author: string;
+    connect: string;
+    copyright: string;
+    defaulticon: string;
+    description: string;
+    downloadURL: string;
+    exclude: string;
+    grant: string;
+    homepage: string;
+    homepageURL: string;
+    icon64: string;
+    icon64URL: string;
+    icon: string;
+    iconURL: string;
+    include: string;
+    match: string;
+    name: string;
+    namespace: string;
+    noframes: string;
+    require: string;
+    resource: string;
+    "run-at": string;
+    "run-in": string;
+    sandbox: string;
+    source: string;
+    supportURL: string;
+    tag: string;
+    unwrap: string;
+    updateURL: string;
+    version: string;
+    webRequest: string;
+    website: string;
+}
+
+type Optional<T> = { [K in keyof T]+?: T[K]; };
+type PickAsOptional<T, K extends keyof T> = { [P in K]+?: T[P]; };
+type HeaderList = ["name", "namespace", "version", "description", "author", "match", "icon", "grant"];
+type ExtractHeader<T> = T extends string[] ? T[number] : never;
+type DefaultHeader = PickAsOptional<ScriptHeader, ExtractHeader<HeaderList>>;
+
 interface PackageOptions {
     version: string;
     description: string;
@@ -25,23 +67,39 @@ interface PackageOptions {
     metadata: ScriptMetadata;
 }
 
-async function readJson<T extends PackageOptions>(source: string): Promise<T> {
+async function readJson<T extends Optional<ScriptHeader>>(source: string): Promise<T> {
     const cwd = process.cwd();
+    const headerData: DefaultHeader = {
+        name: "New Userscript",
+        namespace: "http://tampermonkey.net/",
+        version: new Date().toISOString().split('T')[0],
+        description: "try to take over the world!",
+        author: "You",
+        match: "http://*/*",
+        icon: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
+        grant: "none"
+    };
 
     try {
         const buffer = await readFile(path.join(cwd, source), "utf-8");
         const result: unknown = JSON.parse(buffer);
-        const isTypeObj = isObject(result);
 
-        if (!isTypeObj || (isTypeObj && isEmpty(result))) {
-            return {
-                metadata: {}
-            } as T;
+        if (isObject(result) && "userscript" in result) {
+            const { userscript: scriptData } = result;
+
+            if (!isObject(scriptData)) {
+                return headerData as T;
+            }
+
+            for (const key in headerData) {
+                if (Object.prototype.hasOwnProperty.call(headerData, key)) {
+                    scriptData[key] = scriptData[key] ?? headerData[key];
+                }
+            }
+            return scriptData as T;
         }
-        if ("metadata" in result)
-            return result as T;
 
-        return (result["metadata"] = {}, result) as T;
+        return headerData as T;
     }
     catch (exception: unknown) {
         let error: ThisError<Error> = (
