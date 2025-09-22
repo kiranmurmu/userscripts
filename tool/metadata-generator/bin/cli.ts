@@ -3,12 +3,13 @@
 import process from "node:process";
 import path from "node:path";
 import { program as prog, type OptionValues } from "commander";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 
 const ExitCode = {
     "ERR_INVALID_SYNTAX": 2,
     "ERR_UNREADABLE_JSON": 3,
     "ERR_OPTION_HANDLE": 4,
+    "ERR_WRITE_FILE": 5,
 } as const;
 
 type ExitCode = keyof typeof ExitCode;
@@ -113,6 +114,26 @@ async function readJson<T extends Optional<ScriptHeader>>(source: string): Promi
     }
 }
 
+async function writeData(data: string[], file: string) {
+    const cwd = process.cwd();
+
+    try {
+        await writeFile(path.join(cwd, file), data.join("\n"), "utf-8");
+    }
+    catch (exception: unknown) {
+        const error: ThisError<Error> = (
+            exception instanceof Error ? exception : new Error()
+        );
+
+        throw (
+            error.message = "unable to write data",
+            error.code = "ERR_WRITE_FILE",
+            error.exitCode = ExitCode[error.code],
+            exception = error
+        );
+    }
+}
+
 function createMetadata(data: Optional<ScriptHeader>) {
     const buffer = ["// ==UserScript=="];
     const keyArr = Object.keys(data);
@@ -138,7 +159,7 @@ async function handleOptions(options: OptionValues, defaultOpts: DefaultOptions)
         const metadata = createMetadata(dataObj);
 
         if (typeof output == "string" && output) {
-            console.log("TODO: save to file");
+            await writeData(metadata, output);
         }
         else {
             console.log(metadata.join("\n"));
