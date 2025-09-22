@@ -113,6 +113,20 @@ async function readJson<T extends Optional<ScriptHeader>>(source: string): Promi
     }
 }
 
+function createMetadata(data: Optional<ScriptHeader>) {
+    const buffer = ["// ==UserScript=="];
+    const keyArr = Object.keys(data);
+    const maxLen = keyArr.reduce((prev, key) => (key.length > prev ? key.length : prev), 1);
+
+    for (const key of keyArr) {
+        const name = key.startsWith("@") ? key : `@${key}`;
+        const spaces = " ".repeat(maxLen - key.length);
+
+        buffer.push(`// ${name} ${spaces} ${data[key]}`);
+    }
+    return (buffer.push("// ==/UserScript=="), buffer);
+}
+
 async function handleOptions(options: OptionValues, defaultOpts: DefaultOptions) {
     if (isEmpty(options)) prog.help();
 
@@ -121,12 +135,13 @@ async function handleOptions(options: OptionValues, defaultOpts: DefaultOptions)
 
     try {
         const dataObj = await readJson(input);
+        const metadata = createMetadata(dataObj);
 
         if (typeof output == "string" && output) {
             console.log("TODO: save to file");
         }
         else {
-            console.log(dataObj);
+            console.log(metadata.join("\n"));
         }
     }
     catch(exception: unknown) {
