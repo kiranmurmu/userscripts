@@ -83,19 +83,29 @@ async function readJson<T extends Optional<ScriptHeader>>(source: string): Promi
                 return headerData as T;
             }
 
+            for (const key in scriptData) {
+                if (Object.prototype.hasOwnProperty.call(scriptData, key)) {
+                    if (key.startsWith("@")) {
+                        throw `key can't starts with "@"`;
+                    }
+                }
+            }
+
             for (const key in headerData) {
                 if (Object.prototype.hasOwnProperty.call(headerData, key)) {
-                    scriptData[key] = scriptData[key] ?? headerData[key];
+                    scriptData[key] = scriptData[key] || headerData[key];
                 }
             }
             return scriptData as T;
         }
 
-        return headerData as T;
+        throw `key "userscript" not found`;
     }
     catch (exception: unknown) {
         let error: ThisError<Error> = (
-            exception instanceof Error ? exception : new Error()
+            exception instanceof Error ? exception : new Error(
+                typeof exception == "string" ? exception : undefined
+            )
         );
 
         if (error instanceof SyntaxError) {
@@ -103,7 +113,7 @@ async function readJson<T extends Optional<ScriptHeader>>(source: string): Promi
             error.code = "ERR_INVALID_SYNTAX";
         }
         else {
-            error.message = "unable to read json";
+            error.message = error.message || "unable to read json";
             error.code = "ERR_UNREADABLE_JSON";
         }
 
