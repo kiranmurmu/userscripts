@@ -140,10 +140,10 @@ function createMetadata(data: Optional<ScriptHeader>) {
     const maxLen = keyArr.reduce((prev, key) => (key.length > prev ? key.length : prev), 1);
 
     for (const key of keyArr) {
-        const name = key.startsWith("@") ? key : `@${key}`;
-        const spaces = " ".repeat(maxLen - key.length);
+        const count = maxLen - key.length;
+        const spaces = " ".repeat(count < 1 ? 0 : count);
 
-        buffer.push(`// ${name} ${spaces} ${data[key]}`);
+        buffer.push(`// @${key} ${spaces} ${data[key]}`);
     }
     return (buffer.push("// ==/UserScript=="), buffer);
 }
