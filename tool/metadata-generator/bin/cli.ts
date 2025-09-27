@@ -102,7 +102,7 @@ async function readJson<T extends Optional<ScriptHeader>>(source: string): Promi
         throw `key "userscript" not found`;
     }
     catch (exception: unknown) {
-        let error: ThisError<Error> = (
+        const error: ThisError<Error> = (
             exception instanceof Error ? exception : new Error(
                 typeof exception == "string" ? exception : undefined
             )
@@ -176,7 +176,7 @@ async function handleOptions(options: OptionValues, defaultOpts: DefaultOptions)
         }
     }
     catch(exception: unknown) {
-        let error: ThisError<Error> = (
+        const error: ThisError<Error> = (
             exception instanceof Error ? exception : new Error("unable to handle command option")
         );
 
