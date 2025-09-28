@@ -145,17 +145,42 @@ async function writeData(data: string[], file: string) {
 }
 
 function createMetadata(data: Optional<ScriptHeader>) {
-    const buffer = ["// ==UserScript=="];
-    const keyArr = Object.keys(data);
-    const maxLen = keyArr.reduce((prev, key) => (key.length > prev ? key.length : prev), 1);
+    const result = ["// ==UserScript=="];
+    const buffer: Array<[string, string]> = [];
 
-    for (const key of keyArr) {
-        const count = maxLen - key.length;
-        const spaces = " ".repeat(count < 1 ? 0 : count);
+    for (const key of Object.keys(data)) {
+        const value: unknown = data[key];
 
-        buffer.push(`// @${key} ${spaces} ${data[key]}`);
+        if (typeof value == "string") {
+            buffer.push([key, value]);
+        }
+        else if (Array.isArray(value)) {
+            for (const item of value) {
+                if (typeof item == "string") {
+                    buffer.push([key, item]);
+                }
+                else if (isObject(item)) {
+                    for (const name of Object.keys(item)) {
+                        buffer.push([`${key}:${name}`, item[name]]);
+                    }
+                }
+            }
+        }
+        else if (isObject(value)) {
+            for (const name of Object.keys(value)) {
+                buffer.push([`${key} ${name}`, value[name]]);
+            }
+        }
     }
-    return (buffer.push("// ==/UserScript=="), buffer);
+
+    const maxLen = buffer.reduce((prev, [key]) => (key.length > prev ? key.length : prev), 1);
+    result.push(...buffer.map(([key, value]) => {
+        const count = maxLen - key.length;
+        const space = " ".repeat(count < 1 ? 0 : count);
+        return `// @${key} ${space} ${value}`;
+    }));
+
+    return (result.push("// ==/UserScript=="), result);
 }
 
 async function handleOptions(options: OptionValues, defaultOpts: DefaultOptions) {
