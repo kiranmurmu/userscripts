@@ -84,7 +84,7 @@ async function readJson<T extends Optional<ScriptHeader>>(source: string): Promi
             }
 
             for (const key in scriptData) {
-                if (Object.prototype.hasOwnProperty.call(scriptData, key)) {
+                if (hasOwnProperty(scriptData, key)) {
                     if (key.startsWith("@")) {
                         throw `key can't starts with "@"`;
                     }
@@ -92,7 +92,7 @@ async function readJson<T extends Optional<ScriptHeader>>(source: string): Promi
             }
 
             for (const key in headerData) {
-                if (Object.prototype.hasOwnProperty.call(headerData, key)) {
+                if (hasOwnProperty(headerData, key)) {
                     scriptData[key] = scriptData[key] || headerData[key];
                 }
             }
@@ -148,7 +148,8 @@ function createMetadata(data: Optional<ScriptHeader>) {
     const result = ["// ==UserScript=="];
     const buffer: Array<[string, string]> = [];
 
-    for (const key of Object.keys(data)) {
+    for (const key in data) {
+        if (!hasOwnProperty(data, key)) continue;
         const value: unknown = data[key];
 
         if (typeof value == "string") {
@@ -160,14 +161,16 @@ function createMetadata(data: Optional<ScriptHeader>) {
                     buffer.push([key, item]);
                 }
                 else if (isObject(item)) {
-                    for (const name of Object.keys(item)) {
+                    for (const name in item) {
+                        if (!hasOwnProperty(item, name)) continue;
                         buffer.push([`${key}:${name}`, item[name]]);
                     }
                 }
             }
         }
         else if (isObject(value)) {
-            for (const name of Object.keys(value)) {
+            for (const name in value) {
+                if (!hasOwnProperty(value, name)) continue;
                 buffer.push([`${key} ${name}`, value[name]]);
             }
         }
@@ -212,12 +215,16 @@ async function handleOptions(options: OptionValues, defaultOpts: DefaultOptions)
     }
 }
 
+function hasOwnProperty(obj: object, key: string): boolean {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+}
+
 function isEmpty(obj: object | any[]) {
     if (Array.isArray(obj)) {
         return !obj.length;
     }
     for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (hasOwnProperty(obj, key)) {
             return false;
         }
     }
