@@ -128,7 +128,8 @@ async function writeData(data: string[], file: string) {
     const cwd = process.cwd();
 
     try {
-        await writeFile(path.join(cwd, file), data.join("\n"), "utf-8");
+        const buffer = [...data, "\n"];
+        await writeFile(path.join(cwd, file), buffer.join("\n"), "utf-8");
     }
     catch (exception: unknown) {
         const error: ThisError<Error> = (
