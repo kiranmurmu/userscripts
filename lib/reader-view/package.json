@@ -6,11 +6,32 @@
     "scripts": {
         "build": "npm run build:main && npm run build:meta && npm run build:user",
         "build:main": "tsc -p tsconfig.build.json",
-        "build:meta": "head -n 19 src/reader-view.ts > build/reader-view.meta.js",
+        "build:meta": "metag -o build/reader-view.meta.js",
         "build:user": "cat build/reader-view.meta.js build/reader-view.js > build/reader-view.user.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
     "author": "",
-    "license": "MIT"
+    "license": "MIT",
+    "userscript": {
+        "name": "Reader View (Readability)",
+        "namespace": "https://kiranmurmu.github.io/",
+        "description": "Reader View (UserScript) for Tampermonkey",
+        "match": "*://*/*",
+        "author": "Kiran Murmu <44278642+kiranmurmu@users.noreply.github.com>",
+        "version": "",
+        "homepage": "https://github.com/kiranmurmu/userscripts",
+        "source": "https://github.com/kiranmurmu/userscripts/tree/main/reader-view",
+        "license": "MIT",
+        "run-at": "document-start",
+        "grant": [
+            "GM_registerMenuCommand",
+            "GM_getResourceURL"
+        ],
+        "icon": "https://www.tampermonkey.net/images/icon.png",
+        "require": "https://cdnjs.cloudflare.com/ajax/libs/readability/0.6.0/Readability.min.js",
+        "resource": {
+            "reader.css": "https://github.com/kiranmurmu/userscripts/raw/refs/heads/main/lib/reader-view/style/reader.css"
+        }
+    }
 }
