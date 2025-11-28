@@ -30,6 +30,8 @@
         ],
         "icon": "https://www.tampermonkey.net/images/icon.png",
         "require": "https://cdnjs.cloudflare.com/ajax/libs/readability/0.6.0/Readability.min.js",
+        "updateURL": "https://github.com/kiranmurmu/userscripts/raw/refs/heads/main/lib/reader-view/build/reader-view.meta.js",
+        "downloadURL": "https://github.com/kiranmurmu/userscripts/raw/refs/heads/main/lib/reader-view/build/reader-view.user.js",
         "resource": {
             "reader.css": "https://github.com/kiranmurmu/userscripts/raw/refs/heads/main/lib/reader-view/style/reader.css"
         }
