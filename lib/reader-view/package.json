@@ -15,7 +15,7 @@
     "license": "MIT",
     "userscript": {
         "name": "Reader View (Readability)",
-        "namespace": "https://kiranmurmu.github.io/",
+        "namespace": "https://kiranmurmu.github.io/userscripts",
         "description": "Reader View (UserScript) for Tampermonkey",
         "match": "*://*/*",
         "author": "Kiran Murmu <44278642+kiranmurmu@users.noreply.github.com>",
@@ -23,7 +23,7 @@
         "homepage": "https://github.com/kiranmurmu/userscripts",
         "source": "https://github.com/kiranmurmu/userscripts/tree/main/reader-view",
         "license": "MIT",
-        "run-at": "document-start",
+        "run-at": "document-idle",
         "grant": [
             "GM_registerMenuCommand",
             "GM_getResourceURL"
